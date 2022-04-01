@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:fsi_app/utils/constants.dart';
 import 'package:fsi_app/utils/endpoints.dart';
-import 'package:hive/hive.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class ApiBasics {
@@ -16,7 +14,9 @@ class ApiBasics {
       responseHeader: true,
     ));
     return await _dio
-        .get(url, options: Options(headers: await _getHeader() ?? headers))
+        .get(url,
+            options: Options(
+                sendTimeout: 30000, headers: await _getHeader() ?? headers))
         .then((value) => value.data);
   }
 
@@ -33,7 +33,7 @@ class ApiBasics {
         .post(url,
             data: FormData.fromMap(data),
             options: Options(
-                headers: headers == null ? await _getHeader() : headers))
+                sendTimeout: 30000, headers: await _getHeader() ?? headers))
         .then((value) => value.data);
   }
 
@@ -48,8 +48,8 @@ class ApiBasics {
         compact: true));
     return await _dio.put(url,
         data: FormData.fromMap(data),
-        options:
-            Options(headers: headers == null ? await _getHeader() : headers));
+        options: Options(
+            sendTimeout: 30000, headers: await _getHeader() ?? headers));
   }
 
   static Future makeDeleteRequest(url, data, id, headers) async {
@@ -63,13 +63,15 @@ class ApiBasics {
         compact: true));
     return await _dio.delete(url + "/$id",
         data: FormData.fromMap(data),
-        options: Options(headers: await _getHeader()));
+        options: Options(
+            sendTimeout: 30000, headers: await _getHeader() ?? headers));
   }
 }
 
 Future _getHeader() async {
   return {
-    'Authorization': 'Bearer $sandboxKey',
+    'sandbox-key': sandboxKey,
+    'Authorization': 'dskjdks',
     'Content-Type': 'application/json'
   };
 }
